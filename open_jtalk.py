@@ -14,7 +14,7 @@ class openjtalk:
 
 def talk(t):
     talker = openjtalk()
-    talker.speed = 0.5
+    talker.speed = 1.0
     talker.speak(t)
 
 #talker = openjtalk()
