@@ -9,8 +9,8 @@ sys.path.append('..')
 
 import mumeikaneshige as mk
 
+
 from detect_human import main_process as human_detect
-from human import main_process as h_detect
 
 class SampleRobot(mk.Mumeikaneshige):
     """

@@ -23,4 +23,4 @@ for forecast in resp['forecasts']:
     #print (forecast['dateLabel']+'('+forecast['date']+')')
     #print (forecast['telop'])
     #print ('**************************')
-    open_jtalk.talk('横浜の' + forecast['dateLabel'] + 'の天気は' + forecast['telop'] + 'です')
+    open_jtalk.talk('ここの' + forecast['dateLabel'] + 'の天気は' + forecast['telop'] + 'です')
