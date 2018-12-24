@@ -8,7 +8,7 @@ import sys
 sys.path.append('..')
 
 import mumeikaneshige as mk
-
+import movidius
 
 from detect_human import main_process as human_detect
 
