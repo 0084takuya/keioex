@@ -37,10 +37,21 @@ class SampleRobot(mk.Mumeikaneshige):
     def run(self):
         # 実際の動作をここに書く
 
-        # while 人の顔または動体が認識されるまで待つ
-        frame1, frame2 = self.senders['Webcamera'].msg_queue.get(timeout = 0.1)
-        coc_pos_list = detect_human(frame1)
-        print(coc_pos_list)
+        while True:
+            # Webカメラの画像を取得
+            frame1, frame2 = self.senders['Webcamera'].msg_queue.get()
+            # Movidiusで演算
+            result = self.ssd_detector.detect(cv2.resize(frame2, (300,300)))
+            # 人の座標
+            person_rect = None
+            for item in result:
+                if item['category'] == 'person':
+                    person_pos = ((item['x1'], item['y1']), (item['x2'], item['y2']))
+                    break
+
+            # 人が画像内にいない場合
+            if person_rect is None:
+                return 'extermed_coc'
         # if 知っている人か
                 # wav ”＠＠さんこんにちは、何分お休みになりますか？”
                 # while 入力待ちjuliusからの文字列”＊＊分”
@@ -71,6 +82,8 @@ class SampleRobot(mk.Mumeikaneshige):
                     self.controllers['Arm'].cmd_queue.put(50)
                     time.sleep(1)
                     self.controllers['Arm'].cmd_queue.put(-20)
+                elif 'e' in keys or 'E' in keys:
+                    self.controllers['Motor'].cmd_queue.put((e,e))
                 else:
                     pass
             except queue.Empty:
@@ -109,6 +122,7 @@ def main():
     robot = SampleRobot()
 
     robot.run()
+    del robot
 
 if __name__ == '__main__':
     main()
