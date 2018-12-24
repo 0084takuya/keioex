@@ -29,6 +29,18 @@ class SampleRobot(mk.Mumeikaneshige):
 
         self.controllers['Arm'].cmd_queue.put(-20)
 
+        # 画像の中の棒で叩ける四角形の座標[(x1, y1), (x2, y2)]
+        self.smash_point = [(290, 330), (400, 350)]
+
+        # movidius召喚
+        path_to_graph = '../../movidius/graph'
+        categories = ('background','aeroplane', 'bicycle', 'bird', 'boat',
+                      'bottle', 'bus', 'car', 'cat', 'chair','cow',
+                      'diningtable', 'dog', 'horse','motorbike', 'person',
+                      'pottedplant', 'sheep','sofa', 'train', 'tvmonitor')
+
+        self.ssd_detector = movidius.MobileSSD('../../movidius/graph', categories)
+
     def key_input(self, key_queue):
         while True:
             keys = input() # 入力を受け取る
