@@ -6,6 +6,7 @@ import multiprocessing as mp
 import queue
 import sys
 sys.path.append('..')
+import cv2
 
 import mumeikaneshige as mk
 import movidius
@@ -27,7 +28,7 @@ class SampleRobot(mk.Mumeikaneshige):
 
         self.th_key_input.start() # スレッドをスタートする
 
-        self.controllers['Arm'].cmd_queue.put(-20)
+        # self.controllers['Arm'].cmd_queue.put(-20)
 
         # 画像の中の棒で叩ける四角形の座標[(x1, y1), (x2, y2)]
         self.smash_point = [(290, 330), (400, 350)]
