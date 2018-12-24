@@ -47,36 +47,13 @@ class SampleRobot(mk.Mumeikaneshige):
         while True:
             keys = input() # 入力を受け取る
             key_queue.put(keys, True) # 受け取ったら即キューに送信
-    
 
-    def run(self):
-        # 実際の動作をここに書く
-
-        #def def1(name):
-        #    print(name)
-
-
-        #now = datetime.now()
-        #now = datetime(now.year, now.month, now.day, now.hour, 29, 0)
-        #comp = datetime(now.year, now.month, now.day, now.hour, 29, 3)
-        #diff = comp - now
-        #print(diff)
-
-        #if int(diff.days) >= 0:
-        #    scheduler = sched.scheduler(time.time, time.sleep)
-        #    scheduler.enter(diff.seconds, 1, def1, ("hoge", ))
-        #    scheduler.run()
-        #    self.controllers['Arm'].cmd_queue.put(50)
-        #    time.sleep(1)
-        #    self.controllers['Arm'].cmd_queue.put(-20)
-        #else:
-        #    print("do nothing")
-
+    def detect_human(self):
         while True:
             # Webカメラの画像を取得
             frame1, frame2 = self.senders['Webcamera'].msg_queue.get()
             # Movidiusで演算
-            
+
             result = self.ssd_detector.detect(cv2.resize(frame2, (300,300)))
             # 人の座標
             person_rect = None
@@ -85,22 +62,44 @@ class SampleRobot(mk.Mumeikaneshige):
                     person_pos = ((item['x1'], item['y1']), (item['x2'], item['y2']))
                     print(person_pos)
                     person_rect = person_pos
-                    self.command()
                     break
 
             # 人が画像内にいない場合
             if person_rect is None:
                 print ("none")
-        # if 知っている人か
-                # wav ”＠＠さんこんにちは、何分お休みになりますか？”
-                # while 入力待ちjuliusからの文字列”＊＊分”
-                    # "**分で記録して”おやすみなさい” カウントダウンして待つ"
 
-            #else 知らない人か
-                # wav "誰ですか名前を登録します"
+    def run(self):
+        self.detect_human()
+        self.command()
+        # 実際の動作をここに書く
+
+
+    def five_minutes():
+        def def1(name):
+           print(name)
+
+
+        now = datetime.now()
+        now = datetime(now.year, now.month, now.day, now.hour, 29, 0)
+        comp = datetime(now.year, now.month, now.day, now.hour, 29, 3)
+        diff = comp - now
+        print(diff)
+
+        if int(diff.days) >= 0:
+           scheduler = sched.scheduler(time.time, time.sleep)
+           scheduler.enter(diff.seconds, 1, def1, ("起きろ！", ))
+           scheduler.run()
+           self.controllers['Arm'].cmd_queue.put(50)
+           time.sleep(1)
+           self.controllers['Arm'].cmd_queue.put(-20)
+           self.exit()
+        else:
+           print("do nothing")
+
 
     def command(self):
         print("command")
+        print("何分間寝ますか？")
         while True:
             # キーボードのキューの確認
             try:
@@ -157,6 +156,7 @@ class SampleRobot(mk.Mumeikaneshige):
                 elif '５分' in julius_msg:
                     self.controllers['JTalk'].cmd_queue.put('/home/ri/work/robot/voice-sample/yes.wav')
                     print('5hun')
+                    self.five_minutes()
                 else :
                     pass
             except queue.Empty:
@@ -164,7 +164,6 @@ class SampleRobot(mk.Mumeikaneshige):
 
 def main():
     robot = SampleRobot()
-
     robot.run()
     del robot
 
