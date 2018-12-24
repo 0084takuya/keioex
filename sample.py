@@ -74,6 +74,25 @@ class SampleRobot(mk.Mumeikaneshige):
                 # wav "誰ですか名前を登録します"
 
         while True:
+            try:
+                # Webカメラの画像を取得
+                frame1, frame2 = self.senders['Webcamera'].msg_queue.get()
+                # Movidiusで演算
+                result = self.ssd_detector.detect(cv2.resize(frame2, (300,300)))
+                # 人の座標
+                person_rect = None
+                for item in result:
+                    if item['category'] == 'person':
+                        person_pos = ((item['x1'], item['y1']), (item['x2'], item['y2']))
+                        break
+
+                # 人が画像内にいない場合
+                if person_rect is None:
+                    return 'extermed_coc'
+            except queue.Empty:
+                pass
+
+                
             # キーボードのキューの確認
             try:
                 keys = None # 何かしら入れておく特に大きな意味はない
