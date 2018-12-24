@@ -9,6 +9,8 @@ sys.path.append('..')
 
 import mumeikaneshige as mk
 
+from detect_human import detect_human
+
 class SampleRobot(mk.Mumeikaneshige):
     """
     中間発表で見せた挙動をするロボット
@@ -19,13 +21,13 @@ class SampleRobot(mk.Mumeikaneshige):
 
         # キーボード入力のスレッドの生成
         self.key_queue = mp.Queue()
-        self.th_key_input = threading.Thread(target = self.key_input, 
+        self.th_key_input = threading.Thread(target = self.key_input,
                               args = (self.key_queue,))
-        
+
         self.th_key_input.start() # スレッドをスタートする
 
         self.controllers['Arm'].cmd_queue.put(-20)
-    
+
     def key_input(self, key_queue):
         while True:
             keys = input() # 入力を受け取る
@@ -35,8 +37,9 @@ class SampleRobot(mk.Mumeikaneshige):
         # 実際の動作をここに書く
 
         # while 人の顔または動体が認識されるまで待つ
-        webcamera_msg = self.senders['Webcamera'].msg_queue.get(timeout = 0.1)
-        print(webcamera_msg)
+        frame1, frame2 = self.senders['Webcamera'].msg_queue.get(timeout = 0.1)
+        coc_pos_list = detect_human(frame1)
+        print(coc_pos_list)
         # if 知っている人か
                 # wav ”＠＠さんこんにちは、何分お休みになりますか？”
                 # while 入力待ちjuliusからの文字列”＊＊分”
@@ -44,12 +47,12 @@ class SampleRobot(mk.Mumeikaneshige):
 
             #else 知らない人か
                 # wav "誰ですか名前を登録します"
-        
+
         while True:
             # キーボードのキューの確認
             try:
                 keys = None # 何かしら入れておく特に大きな意味はない
-                
+
                 # 0.1秒経過してもキューが空だったらmp.Empty例外が出る
                 keys = self.key_queue.get(timeout = 0.1)
 
@@ -74,7 +77,7 @@ class SampleRobot(mk.Mumeikaneshige):
 
             # Juliusから送られる文字列の確認
             try:
-                julius_msg = None 
+                julius_msg = None
                 julius_msg = self.senders['Julius'].msg_queue.get(timeout = 0.1)
                 if '止まれ' in julius_msg:
                     self.controllers['Motor'].cmd_queue.put((0,0))
@@ -100,10 +103,10 @@ class SampleRobot(mk.Mumeikaneshige):
                     pass
             except queue.Empty:
                 pass
-        
+
 def main():
     robot = SampleRobot()
-    
+
     robot.run()
 
 if __name__ == '__main__':
