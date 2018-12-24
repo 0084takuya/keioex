@@ -5,13 +5,12 @@ import threading
 import multiprocessing as mp
 import queue
 import sys
-sys.path.append('..')
+sys.path.append('../../')
 import cv2
 
 import mumeikaneshige as mk
 import movidius
 
-from detect_human import main_process as human_detect
 
 class SampleRobot(mk.Mumeikaneshige):
     """
